@@ -1,7 +1,7 @@
 {
-	"name": "qlik-auth-windows",
+	"name": "qlik-auth-windows-session",
 	"description": "SvelteKit companion repo for blog post",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"license": "MIT",
 	"author": {
 		"name": "Stefan Stoichev @countnazgul",
