@@ -23,8 +23,11 @@
 
   const qsHost = "my-sense-instance.com";
   const reloadURI = `http://localhost:3000`;
+  const xrfkey = "1234567890123456";
+  const qsReloadTasksURL = `https://${qsHost}/qrs/reloadtask?Xrfkey=${xrfkey}`;
 
   let qlikApps = [];
+  let qlikReloadTasks = [];
 
   const session = enigma.create({
     schema,
@@ -38,6 +41,15 @@
     if (data.loginUri) goto(data.loginUri);
   });
 
+  session.on("notification:OnConnected", async () => {
+    qlikReloadTasks = await fetch(qsReloadTasksURL, {
+      credentials: "include",
+      headers: {
+        "X-Qlik-Xrfkey": `${xrfkey}`,
+      },
+    }).then((res) => res.json());
+  });
+
   (async function () {
     let global = await session.open();
     qlikApps = await global.getDocList();
@@ -46,17 +58,28 @@
 </script>
 
 <main>
-  <h1>Qlik apps:</h1>
+  <div>
+    <h1>Qlik apps:</h1>
 
-  {#each qlikApps as qlikApp}
-    <div title={qlikApp.qDocId}>{qlikApp.qDocName}</div>
-  {/each}
+    {#each qlikApps as qlikApp}
+      <div title={qlikApp.qDocId}>{qlikApp.qDocName}</div>
+    {/each}
+  </div>
+  <div>
+    <h1>Qlik Reload Tasks:</h1>
+
+    {#each qlikReloadTasks as reloadTask}
+      <div title={reloadTask.id}>{reloadTask.name}</div>
+    {/each}
+  </div>
 </main>
 
 <style>
   main {
     padding: 1em;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: 50% 50%;
   }
 
   h1 {
